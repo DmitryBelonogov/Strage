@@ -1,5 +1,6 @@
-# Strage
+[![](https://jitpack.io/v/nougust3/Strage.svg)](https://jitpack.io/#nougust3/Strage)
 
+# Strage      
 Strage is a simple adapter for RecyclerView with multiple view types.
 
 ## Usage:
