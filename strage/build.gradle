@@ -3,6 +3,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
+group='com.github.nougust3'
+
 ext {
     bintrayRepo = 'Strage'
     bintrayName = 'Strage'
