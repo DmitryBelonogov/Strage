@@ -6,16 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import java.lang.Exception
-import kotlin.collections.HashMap
-import java.lang.reflect.ParameterizedType
-import java.util.*
+import java.util.ArrayList
 
-class StrageHolder(view: View): RecyclerView.ViewHolder(view)
+class StrageHolder(private val v: View): RecyclerView.ViewHolder(v) {
+
+    fun <T : View> view(id: Int): T =
+        v.findViewById(id)
+
+}
 
 class StrageAdapter(
     val builder: Strage,
-    private val items : ArrayList<*>,
-    private val binders: HashMap<Class<*>, Pair<Int, StrageHolder.(Any) -> Unit>>,
+    private val items: ArrayList<*>,
+    private val binders: HashMap<String, Pair<Int, StrageHolder.(Any) -> Unit>>,
     private val context: Context
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -24,21 +27,19 @@ class StrageAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
+        val binder = binders[item.javaClass.name]?.second
 
-        if (binders.containsKey(item::class.java)) {
-            val binder = binders[item::class.java]!!.second
+        if (binder != null)
             binder(holder as StrageHolder, item)
-            return
-        }
-
-        throw Exception("Not found binding to class: " + item::class.java.canonicalName)
+        else
+            throw Exception("Not found binding to class: " + item::class.java.canonicalName)
     }
 
-    override fun getItemViewType(position: Int)
-            = binders[items[position]::class.java]!!.first
+    override fun getItemViewType(position: Int) =
+        binders[items[position].javaClass.name]!!.first
 
-    override fun getItemCount()
-            = items.size
+    override fun getItemCount() =
+        items.size
 }
 
 class Strage(
@@ -46,17 +47,22 @@ class Strage(
     val data: List<*>
 ) {
 
-    private val binders = HashMap<Class<*>, Pair<Int, StrageHolder.(Any) -> Unit >>()
+    val binders = HashMap<String, Pair<Int, StrageHolder.(Any) -> Unit >>()
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> bind(layout: Int, binder: StrageHolder.(item: T) -> Unit): StrageAdapter {
-        binders[getTargetClass()] = Pair(layout, binder as StrageHolder.(Any) -> Unit)
-        return StrageAdapter(this, data as ArrayList<*>, binders, context)
+    inline fun <reified T> bind(layout: Int, noinline binder: StrageHolder.(item: T) -> Unit): StrageAdapter {
+        binders[T::class.java.name] =
+                Pair(layout, binder as StrageHolder.(Any) -> Unit)
+
+        return build()
     }
 
-    private fun getTargetClass() =
-        (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<*>
+    fun build(): StrageAdapter =
+        StrageAdapter(this, data as ArrayList<*>, binders, context)
+
 }
 
-fun <T> StrageAdapter.bind(layout: Int, binder: StrageHolder.(item: T) -> Unit) =
+inline fun <reified T> StrageAdapter.bind(layout: Int, noinline binder: StrageHolder.(item: T) -> Unit) =
     this.builder.bind(layout, binder)
+
+interface ListItem { }
