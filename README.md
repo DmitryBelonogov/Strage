@@ -5,6 +5,8 @@
 > Strage is a simple adapter for RecyclerView with multiple view types.
 
  [![](https://jitpack.io/v/nougust3/Strage.svg)](https://jitpack.io/#nougust3/Strage)
+ [![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=21)
+ [![](https://img.shields.io/badge/licence-MIT-blue.svg)]()
  
 ## Gradle
 Step 1. Add the JitPack repository to your build file 
@@ -18,7 +20,7 @@ allprojects {
 Step 2. Add the dependency 
 ```gradle
 dependencies {
-	implementation 'com.github.nougust3:Strage:1.0'
+	implementation 'com.github.nougust3:Strage:1.1.2'
 }
 ```
 
