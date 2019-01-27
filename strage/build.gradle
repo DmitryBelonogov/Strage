@@ -5,31 +5,8 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.nougust3'
 
-ext {
-    bintrayRepo = 'Strage'
-    bintrayName = 'Strage'
-
-    libraryName = 'strage'
-
-    publishedGroupId = 'com.github.nougust3'
-    artifact = 'strage'
-    libraryVersion = '1.1.0'
-
-    libraryDescription = "Simple adapter for RecyclerView"
-    siteUrl = "https://github.com/nougust3/Strage"
-    gitUrl = "https://github.com/nougust3/Strage.git"
-    developerId = "nougust3"
-    developerName = "Dmitry Belonogov"
-    developerEmail = "dmitry.belonogov@protonmail.com"
-    licenseName = "MIT License"
-    licenseUrl = "https://spdx.org/licenses/MIT.html"
-    allLicenses = ["MIT"]
-}
-
 android {
     compileSdkVersion 28
-
-
 
     defaultConfig {
         minSdkVersion 21
@@ -38,16 +15,14 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
@@ -59,11 +34,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
+
 repositories {
     mavenCentral()
-}
-
-if (project.rootProject.file('local.properties').exists()) {
-    apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-    apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
 }
