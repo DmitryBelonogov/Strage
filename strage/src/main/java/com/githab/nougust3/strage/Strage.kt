@@ -10,8 +10,20 @@ import java.util.ArrayList
 
 class StrageHolder(private val v: View): RecyclerView.ViewHolder(v) {
 
+    private var listener: (() -> Unit)? = null
+
+    init {
+        v.setOnClickListener {
+            listener?.invoke()
+        }
+    }
+
     fun <T : View> view(id: Int): T =
         v.findViewById(id)
+
+    fun setOnClickListener(listener: () -> Unit) {
+        this.listener = listener
+    }
 
 }
 
@@ -52,7 +64,7 @@ class Strage(
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T> bind(layout: Int, noinline binder: StrageHolder.(item: T) -> Unit): StrageAdapter {
         binders[T::class.java.name] =
-                Pair(layout, binder as StrageHolder.(Any) -> Unit)
+            Pair(layout, binder as StrageHolder.(Any) -> Unit)
 
         return build()
     }
@@ -65,4 +77,4 @@ class Strage(
 inline fun <reified T> StrageAdapter.bind(layout: Int, noinline binder: StrageHolder.(item: T) -> Unit) =
     this.builder.bind(layout, binder)
 
-interface ListItem { }
+interface ListItem
