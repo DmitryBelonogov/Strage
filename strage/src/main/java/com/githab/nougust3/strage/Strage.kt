@@ -1,29 +1,17 @@
 package com.githab.nougust3.strage
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import java.lang.Exception
 import java.util.ArrayList
 
 class StrageHolder(private val v: View): RecyclerView.ViewHolder(v) {
 
-    private var listener: (() -> Unit)? = null
-
-    init {
-        v.setOnClickListener {
-            listener?.invoke()
-        }
-    }
-
     fun <T : View> view(id: Int): T =
         v.findViewById(id)
-
-    fun setOnClickListener(listener: () -> Unit) {
-        this.listener = listener
-    }
 
 }
 
@@ -45,6 +33,10 @@ class StrageAdapter(
             binder(holder as StrageHolder, item)
         else
             throw Exception("Not found binding to class: " + item::class.java.canonicalName)
+
+        holder.itemView.setOnClickListener {
+            builder.clickListener?.invoke(it, item)
+        }
     }
 
     override fun getItemViewType(position: Int) =
@@ -59,6 +51,8 @@ class Strage(
     val data: List<*>
 ) {
 
+    var clickListener: ((View, Any) -> Unit)? = null
+
     val binders = HashMap<String, Pair<Int, StrageHolder.(Any) -> Unit >>()
 
     @Suppress("UNCHECKED_CAST")
@@ -69,6 +63,11 @@ class Strage(
         return build()
     }
 
+    fun setOnClickListener(listener: (View, Any) -> Unit): StrageAdapter {
+        clickListener = listener
+        return build()
+    }
+
     fun build(): StrageAdapter =
         StrageAdapter(this, data as ArrayList<*>, binders, context)
 
@@ -76,5 +75,8 @@ class Strage(
 
 inline fun <reified T> StrageAdapter.bind(layout: Int, noinline binder: StrageHolder.(item: T) -> Unit) =
     this.builder.bind(layout, binder)
+
+fun StrageAdapter.setOnClickListener(listener: (View, Any) -> Unit) =
+    this.builder.setOnClickListener(listener)
 
 interface ListItem
