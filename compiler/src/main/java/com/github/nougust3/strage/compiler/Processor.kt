@@ -144,6 +144,18 @@ class Processor: KotlinAbstractProcessor() {
             .returns(adapterClass)
             .build()
 
+    private fun getBinderCode(methods: List<Binder>): String {
+        fun getLayoutCode(binder: Binder) =
+            if (binder.layout == -1) "R.layout.${binder.layoutName}"
+            else binder.layout.toString()
+
+        val builder = StringBuilder()
+
+        
+
+        return builder.toString()
+    }
+
 
     override fun getSupportedAnnotationTypes(): Set<String> = setOf(annotation.canonicalName)
 
