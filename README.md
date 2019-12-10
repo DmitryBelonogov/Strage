@@ -50,3 +50,21 @@ val adapter = Strage(context, items)
 	
 recyclerView.adapter = adapter
 ```
+Step 2. Create an instance of Strage and bind your models
+```kotlin
+@Adapter
+class Main: BaseAdapter() {
+
+    @BindName
+    fun itemLayout(data: Model, titleView: TextView) {
+        titleView.text = data.title
+    }
+
+    @Bind(R.layout.item2_layout)
+    fun stringItem(data: Model2) {
+        holder.view<TextView>(R.id.titleView).text = data.name
+    }
+
+}
+recyclerView.adapter = adapter
+```

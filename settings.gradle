@@ -1,1 +1,1 @@
-include ':app', ':strage'
+include ':app', ':strage', ':annotation', ':compiler'
