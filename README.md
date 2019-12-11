@@ -30,25 +30,27 @@ val name = "Name"
 
 val items = listOf(age, name, User(age, name))
 ```
-**2.** Создайте класс адаптера с аннотацией **@Adapter**
+**2.** Создайте класс адаптера с аннотацией **@Adapter** и методы с аннотациями для каждого типа отображения
+> Аннотация **@BindId**. Принимает в качестве аргумента идентификатор файла разметки
+> Аннотация **@BindName**. Указывает на использование имени метода в качесве указателя на файл разметки
 ```kotlin
 @Adapter
 class MainList {
 
 	@BindId(R.layout.item_name)
-	fun bind(data: String, title: TextView) {
-		title.text = data
+	fun bind(name: String, title: TextView) {
+		title.text = name
 	}
 
 	@BindName
-	fun itenUser(data: String, name: TextView, ageEdit: EditText) {
-		name.text = data.name
-		ageEdit.setText(data.age.toString())
+	fun itenUser(user: User, name: TextView, ageEdit: EditText) {
+		name.text = user.name
+		ageEdit.setText(user.age.toString())
 	}
 
 }
 ```
-**3.**
+**3.** Примените сгенерированный адаптер к списку и зайдайте значения
 ```kotlin
 val adapter = MainListAdapter().get()
 recyclerView.adapter = adapter
