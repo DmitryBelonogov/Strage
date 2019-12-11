@@ -21,7 +21,7 @@ dependencies {
 ```
 
 ## Использование
-Выберите классы или примитивные типы для отображения
+**1.** Выберите классы или примитивные типы для отображения
 ```kotlin
 data class User(val age: String, val name: String)
 
@@ -30,7 +30,7 @@ val name = "Name"
 
 val items = listOf(age, name, User(age, name))
 ```
-Создайте класс адаптера с аннотацией **@Adapter**
+**2.** Создайте класс адаптера с аннотацией **@Adapter**
 ```kotlin
 @Adapter
 class MainList {
@@ -48,21 +48,9 @@ class MainList {
 
 }
 ```
-Step 2. Create an instance of Strage and bind your models
+**3.**
 ```kotlin
-@Adapter
-class Main: BaseAdapter() {
-
-    @BindName
-    fun itemLayout(data: Model, titleView: TextView) {
-        titleView.text = data.title
-    }
-
-    @Bind(R.layout.item2_layout)
-    fun stringItem(data: Model2) {
-        holder.view<TextView>(R.id.titleView).text = data.name
-    }
-
-}
+val adapter = MainListAdapter().get()
 recyclerView.adapter = adapter
+adapter.setItems(items)
 ```
