@@ -23,23 +23,30 @@ dependencies {
 ## Использование
 Выберите классы или примитивные типы для отображения
 ```kotlin
+data class User(val age: String, val name: String)
+
 val age = 26
 val name = "Name"
-data class User(val details: String)
 
-val items = listOf(age, name, User("$name $age"))
+val items = listOf(age, name, User(age, name))
 ```
-Step 2. Create an instance of Strage and bind your models
+Создайте класс адаптера с аннотацией **@Adapter**
 ```kotlin
-val adapter = Strage(context, items)
-	.bind<Model1>(R.layout.item1_layout) {
-		view<TextView>(R.id.title).text = it.title
+@Adapter
+class MainList {
+
+	@BindId(R.layout.item_name)
+	fun bind(data: String, title: TextView) {
+		title.text = data
 	}
-	.bind<Model2>(R.layout.item2_layout) {
-		view<TextView>(R.id.name).text = it.name
+
+	@BindName
+	fun itenUser(data: String, name: TextView, ageEdit: EditText) {
+		name.text = data.name
+		ageEdit.setText(data.age.toString())
 	}
-	
-recyclerView.adapter = adapter
+
+}
 ```
 Step 2. Create an instance of Strage and bind your models
 ```kotlin
