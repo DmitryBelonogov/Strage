@@ -1,42 +1,33 @@
-# Strage
+# Strage [![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=21) [![](https://img.shields.io/badge/licence-MIT-blue.svg)]()
 
-<img src="https://firebasestorage.googleapis.com/v0/b/home-page-852c4.appspot.com/o/strage.svg?alt=media&token=d7e463f3-a14e-407a-9b9e-fe66c7f65203" align="right" title="Strage logo" width="120" height="120">
+> Простой в использовании адаптер с поддержкой нескольких типов отображения
 
-> Strage is a simple adapter for RecyclerView with multiple view types.
-
- [![](https://jitpack.io/v/nougust3/Strage.svg)](https://jitpack.io/#nougust3/Strage)
- [![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=21)
- [![](https://img.shields.io/badge/licence-MIT-blue.svg)]()
  
-## Gradle
-Step 1. Add the JitPack repository to your build file 
+## Установка
+Добавьте плагин **kotlin-kapt**, репозиторий **JitPack.io** и необходимые зависимости в файл *build.gradle* модуля приложения
 ```gradle
+apply plugin: 'kotlin-kapt'
+..
 allprojects {
 	repositories {
 		maven { url 'https://jitpack.io' }
 	}
 }
-```
-Step 2. Add the dependency 
-```gradle
+..
 dependencies {
-	implementation 'com.github.nougust3:Strage:1.1.2'
+	implementation 'com.github.nougust3:Strage:2.0'
+	kapt 'com.github.nougust3:Strage-compiler:2.0'
 }
 ```
 
-## Usage:
-Step 1. Create models that implement a common interface
+## Использование
+Выберите классы или примитивные типы для отображения
 ```kotlin
-data class Model1(
-	var title: String
-): ListItem
+val age = 26
+val name = "Name"
+data class User(val details: String)
 
-data class Model2(
-	var name: String
-): ListItem
-```
-```kotlin
-val items = ArrayList<ListItem>()
+val items = listOf(age, name, User("$name $age"))
 ```
 Step 2. Create an instance of Strage and bind your models
 ```kotlin
