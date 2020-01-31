@@ -1,9 +1,7 @@
 package com.githab.nougust3.strage
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -12,14 +10,22 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        listView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        val adapter = MainAdapter().get(this)
+        listView.layoutManager =
+            androidx.recyclerview.widget.LinearLayoutManager(
+                this,
+                androidx.recyclerview.widget.RecyclerView.VERTICAL,
+                false
+            )
+        val adapter = Strage(this)
+            .build()
+
+        val item = adapter[1]
+        val size = adapter.size()
+
         listView.adapter = adapter
-        adapter.setItems(arrayListOf<Any>(Azaza(1), "Azaza", Azaza(2), "Ololo"))
+        adapter(arrayListOf(Azaza(1), "Azaza", Azaza(2), "Ololo"))
         adapter.notifyDataSetChanged()
     }
 }
 
 data class Azaza(val i: Int)
-
-

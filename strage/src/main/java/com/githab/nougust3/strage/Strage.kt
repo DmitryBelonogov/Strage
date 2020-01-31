@@ -1,11 +1,13 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.githab.nougust3.strage
 
 import android.content.Context
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import java.lang.Exception
 import java.util.ArrayList
 
@@ -21,91 +23,99 @@ class StrageHolder(private val v: View): RecyclerView.ViewHolder(v) {
 
 }
 
-@Suppress("UNCHECKED_CAST")
-class StrageAdapter(
-    val builder: Strage,
-    private val binders: HashMap<String, Pair<Int, StrageHolder.(Any) -> Unit>>,
-    private val context: Context
-): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+typealias RecyclerViewAdapter = RecyclerView.Adapter<RecyclerView.ViewHolder>
+typealias Binders = HashMap<String, Pair<Int, StrageHolder.(Any) -> Unit>>
 
-    private val items: ArrayList<Any> = ArrayList()
-    private var calculatedItems: ArrayList<Any> = ArrayList()
-
-    fun setItems(items: ArrayList<*>) {
-        this.items.clear()
-        this.items.addAll(items)
-        updateCalculatedItems()
-    }
-
-    fun getItems() = items
-
-    fun getCalculatedItems() = calculatedItems
-
-    fun getItem(position: Int) = items[position]
-
-    fun getCalculatedItem(position: Int) = calculatedItems[position]
-
-
-    private var filters = ArrayList<IStrageFilter<Any>>()
-
-    fun getFilters() = filters
-
-    fun addFilter(filter: IStrageFilter<Any>) {
-        filters.add(filter)
-        updateCalculatedItems()
-    }
-
-    fun removeFilter(filterName: String) {
-        val position = filters.indexOfFirst { it.name == filterName }
-        if (position > -1) filters.removeAt(position)
-        updateCalculatedItems()
-    }
+class StrageAdapter(val builder: Strage, private val binders: Binders, private val context: Context):
+    RecyclerViewAdapter() {
 
     private var sorter: Comparator<*>? = null
+    private var items: List<Any> = ArrayList()
+    private var calculatedItems: List<Any> = ArrayList()
 
-    fun <T> setSorter(sorter: Comparator<T>) {
+    var filters: List<IStrageFilter<Any>> = ArrayList()
+
+    operator fun get(index: Int) =
+        calculatedItems[index]
+
+    operator fun invoke(newItems: List<Any>) {
+        items = newItems
+        updateCalculatedItems()
+    }
+
+    fun all() =
+        calculatedItems
+
+    fun size() =
+        calculatedItems.size
+
+    fun addFilter(filter: IStrageFilter<Any>) {
+        filters = filters.plus(filter)
+        updateCalculatedItems()
+    }
+
+    fun removeFilter(name: String) =
+        filters.firstOrNull { it.name == name }?.let {
+            filters = filters.filter { it.name != name }
+            updateCalculatedItems()
+        }
+
+    fun hasFilter(name: String) =
+        filters.any {
+            it.name == name
+        }
+
+    fun <T: Any> setSorter(sorter: Comparator<in T>) {
         this.sorter = sorter
         updateCalculatedItems()
     }
 
-    fun removeSorter() {
-        this.sorter = null
-        updateCalculatedItems()
-    }
+    fun removeSorter() =
+        sorter?.let {
+            sorter = null
+            updateCalculatedItems()
+        }
 
     private fun updateCalculatedItems() {
-        val result = this.items.filter {
-            filters.all { filter -> filter.execute(it) }
-        }
-        this.calculatedItems.clear()
-        this.calculatedItems.addAll(result)
-        if (sorter != null) this.calculatedItems.sortWith(sorter as Comparator<in Any>)
+        calculatedItems = getFilteredItems()
+        sortCalculatedItems()
         notifyDataSetChanged()
     }
+
+    private fun sortCalculatedItems() =
+        sorter?.let {
+            calculatedItems.sortedWith(it as Comparator<in Any>)
+        }
+
+    private fun getFilteredItems() =
+        items.filter {
+            filters.all { filter ->
+                filter.execute(it)
+            }
+        }
 
     override fun onCreateViewHolder(view: ViewGroup, type: Int) =
         StrageHolder(LayoutInflater.from(context).inflate(type, view, false))
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = getCalculatedItem(position)
+        val item = get(position)
         val binder = binders[item.javaClass.name]?.second
+
+        holder.itemView.setOnClickListener {
+            builder.clickListener?.invoke(position, item)
+        }
 
         if (binder != null)
             binder(holder as StrageHolder, item)
         else
             throw Exception("Not found binding to class: " + item::class.java.canonicalName)
-
-        holder.itemView.setOnClickListener {
-            builder.clickListener?.invoke(position, item)
-        }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        val item = getCalculatedItem(position)
-        return binders[item.javaClass.name]!!.first
-    }
+    override fun getItemViewType(position: Int) =
+        binders[get(position).javaClass.name]!!.first
 
-    override fun getItemCount() = calculatedItems.size
+    override fun getItemCount() =
+        calculatedItems.size
 }
 
 class Strage(private val context: Context) {
@@ -152,8 +162,6 @@ fun StrageAdapter.setOnClickListener(listener: (Int, Any) -> Unit) =
 fun StrageAdapter.setComparators(itemsComparator: (Any, Any) -> Boolean, contentComparator: ((Any, Any) -> Boolean)?) =
     this.builder.setComparators(itemsComparator, contentComparator)
 
-interface ListItem
-
 class DiffUtillCallback: DiffUtil.Callback() {
 
     private val oldList: List<*>? = null
@@ -177,5 +185,4 @@ class DiffUtillCallback: DiffUtil.Callback() {
 
     override fun getNewListSize() =
         newList!!.size
-
 }
